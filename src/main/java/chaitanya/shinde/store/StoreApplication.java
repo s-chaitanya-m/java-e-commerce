@@ -1,5 +1,6 @@
 package chaitanya.shinde.store;
 
+import chaitanya.shinde.store.entities.Address;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
