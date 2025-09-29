@@ -1,5 +1,6 @@
 package chaitanya.shinde.store.controllers;
 
+import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
 import chaitanya.shinde.store.repositories.UserRepository;
 import lombok.*;
@@ -20,18 +21,22 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public Iterable<User>getAllUsers() {
-        return userRepository.findAll();
+    public Iterable<UserDto>getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         var user = userRepository.findById(id).orElse(null);
         if (user == null) {
 //            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             return ResponseEntity.notFound().build();
         }
 //        return new ResponseEntity<>(user, HttpStatus.OK);
-        return ResponseEntity.ok(user);
+        var userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
+        return ResponseEntity.ok(userDto);
     }
 }
