@@ -2,6 +2,7 @@ package chaitanya.shinde.store.controllers;
 
 import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
+import chaitanya.shinde.store.mappers.UserMapper;
 import chaitanya.shinde.store.repositories.UserRepository;
 import lombok.*;
 import org.springframework.http.HttpEntity;
@@ -19,12 +20,13 @@ import java.util.List;
 @RequestMapping("/users") //common route - all routes here will be relative to this route
 public class UserController {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @GetMapping
     public Iterable<UserDto>getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
+                .map(userMapper::toDto)
                 .toList();
     }
 
@@ -36,7 +38,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 //        return new ResponseEntity<>(user, HttpStatus.OK);
-        var userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
-        return ResponseEntity.ok(userDto);
+
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 }
