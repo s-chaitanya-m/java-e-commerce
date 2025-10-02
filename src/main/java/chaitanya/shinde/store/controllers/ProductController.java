@@ -4,10 +4,7 @@ import chaitanya.shinde.store.entities.Product;
 import chaitanya.shinde.store.mappers.ProductMapper;
 import chaitanya.shinde.store.repositories.ProductRepository;
 import lombok.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +14,14 @@ import java.util.List;
 public class ProductController {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+
+    @GetMapping("/test-header")
+    public String testHeader (
+            @RequestHeader(required = false, name = "x-auth-token") String authToken
+    ) {
+        System.out.println(authToken);
+        return "header attached with x-auth-token " ;
+    }
 
     @GetMapping
     public List<ProductDto> getProducts(
