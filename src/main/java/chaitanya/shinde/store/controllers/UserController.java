@@ -1,5 +1,6 @@
 package chaitanya.shinde.store.controllers;
 
+import chaitanya.shinde.store.dtos.RegisterUserRequest;
 import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
 import chaitanya.shinde.store.mappers.UserMapper;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -45,5 +47,18 @@ public class UserController {
 //        return new ResponseEntity<>(user, HttpStatus.OK);
 
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(
+            @RequestBody RegisterUserRequest request,
+            UriComponentsBuilder uriBuilder
+    ) {
+        var user = userMapper.toEntity(request);
+        userRepository.save(user);
+
+        var userDto = userMapper.toDto(user);
+        var uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getId()).toUri();
+        return ResponseEntity.created(uri).body(userDto);
     }
 }
