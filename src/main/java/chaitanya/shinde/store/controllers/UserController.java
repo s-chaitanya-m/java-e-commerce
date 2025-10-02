@@ -1,6 +1,7 @@
 package chaitanya.shinde.store.controllers;
 
 import chaitanya.shinde.store.dtos.RegisterUserRequest;
+import chaitanya.shinde.store.dtos.UpdateUserRequest;
 import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
 import chaitanya.shinde.store.mappers.UserMapper;
@@ -60,5 +61,20 @@ public class UserController {
         var userDto = userMapper.toDto(user);
         var uri = uriBuilder.path("/users/{id}").buildAndExpand(userDto.getId()).toUri();
         return ResponseEntity.created(uri).body(userDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable(name = "id") Long id,
+            @RequestBody UpdateUserRequest request
+            ) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userMapper.update(request, user);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 }
