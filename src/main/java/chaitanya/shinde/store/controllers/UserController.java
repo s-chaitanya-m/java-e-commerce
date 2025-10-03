@@ -85,7 +85,7 @@ public class UserController {
     ) {
         var user = userRepository.findById(id).orElse(null);
         if (user == null) return ResponseEntity.notFound().build();
-        userRepository.delete((user));
+        userRepository.delete(user);
         return ResponseEntity.noContent().build();
     }
 
