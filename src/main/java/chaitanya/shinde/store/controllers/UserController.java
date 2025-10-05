@@ -7,6 +7,7 @@ import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
 import chaitanya.shinde.store.mappers.UserMapper;
 import chaitanya.shinde.store.repositories.UserRepository;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -52,10 +54,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(
-            @RequestBody RegisterUserRequest request,
+    public ResponseEntity<?> createUser(
+            @Valid @RequestBody RegisterUserRequest request,
             UriComponentsBuilder uriBuilder
     ) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("email", "Email is already registered.")
+            );
+        }
+
         var user = userMapper.toEntity(request);
         userRepository.save(user);
 
