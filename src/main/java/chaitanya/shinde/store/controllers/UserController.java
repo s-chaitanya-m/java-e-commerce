@@ -7,6 +7,7 @@ import chaitanya.shinde.store.dtos.UserDto;
 import chaitanya.shinde.store.entities.User;
 import chaitanya.shinde.store.mappers.UserMapper;
 import chaitanya.shinde.store.repositories.UserRepository;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
@@ -53,7 +54,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(
-            @RequestBody RegisterUserRequest request,
+            @Valid @RequestBody RegisterUserRequest request,
             UriComponentsBuilder uriBuilder
     ) {
         var user = userMapper.toEntity(request);
