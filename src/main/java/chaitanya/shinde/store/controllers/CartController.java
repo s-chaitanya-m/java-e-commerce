@@ -14,6 +14,7 @@ import chaitanya.shinde.store.mappers.CartMapper;
 import org.springframework.web.util.UriComponentsBuilder;
 import chaitanya.shinde.store.repositories.CartRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -24,6 +25,21 @@ public class CartController {
     public final CartRepository cartRepository;
     public final ProductRepository productRepository;
     public final CartMapper cartMapper;
+
+    @GetMapping
+    public ResponseEntity<List<CartDto>> getAllCarts () {
+        var cartList = cartRepository.findAll();
+        return ResponseEntity.ok(cartList.stream().map(cartMapper::toDto).toList());
+    }
+
+//    @GetMapping("/{cartId}")
+//    public ResponseEntity<CartDto> getCart (
+//            @PathVariable(name = "cartId") UUID cartId
+//    ) {
+//        var cart = cartRepository.findById(cartId).orElse(null);
+//        if(cart == null) return ResponseEntity.notFound().build();
+//
+//    }
 
     @PostMapping
     public ResponseEntity<CartDto> createCart (
