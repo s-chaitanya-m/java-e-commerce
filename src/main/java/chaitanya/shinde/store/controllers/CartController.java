@@ -28,18 +28,20 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<List<CartDto>> getAllCarts () {
-        var cartList = cartRepository.findAll();
+        var cartList = cartRepository.getAllCartWithItems();
         return ResponseEntity.ok(cartList.stream().map(cartMapper::toDto).toList());
     }
 
-//    @GetMapping("/{cartId}")
-//    public ResponseEntity<CartDto> getCart (
-//            @PathVariable(name = "cartId") UUID cartId
-//    ) {
-//        var cart = cartRepository.findById(cartId).orElse(null);
-//        if(cart == null) return ResponseEntity.notFound().build();
-//
-//    }
+    @GetMapping("/{cartId}")
+    public ResponseEntity<CartDto> getCart (
+            @PathVariable(name = "cartId") UUID cartId
+    ) {
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
+        if(cart == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(cartMapper.toDto(cart));
+
+    }
 
     @PostMapping
     public ResponseEntity<CartDto> createCart (
@@ -60,7 +62,7 @@ public class CartController {
             @PathVariable(name = "cartId") UUID cartId,
             @RequestBody AddItemToCartRequest request
             ) {
-        var cart = cartRepository.findById(cartId).orElse(null);
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
         if (cart == null ) return ResponseEntity.notFound().build();
 
         var product = productRepository.findById(request.getProductId()).orElse(null);
