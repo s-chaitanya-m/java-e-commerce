@@ -19,6 +19,7 @@ import chaitanya.shinde.store.repositories.CartRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -95,5 +96,23 @@ public class CartController {
 
         var cartItemDto = cartMapper.toDto(cartItem);
         return ResponseEntity.ok(cartItemDto);
+    }
+
+    @DeleteMapping("/{cartId}/items/{productId}")
+    public ResponseEntity<?> deleteCartItem (
+            @PathVariable(name = "cartId") UUID cartId,
+            @PathVariable(name = "productId") Long productId
+    ) {
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
+        if (cart == null ) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Cart not found."));
+
+        var cartItem = cart.getItem(productId);
+        if (cartItem == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Product was not found in the cart."));
+
+        cart.removeCartItem(productId);
+
+        cartRepository.save(cart);
+
+        return ResponseEntity.noContent().build();
     }
 }
