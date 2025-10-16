@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -25,7 +26,7 @@ public class Cart {
     private LocalDate dateCreated;
 
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.MERGE, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<CartItem> cartItems = new LinkedHashSet<>();
 
     public BigDecimal getTotalPrice () {
@@ -49,6 +50,18 @@ public class Cart {
         }
 
         return cartItem;
+    }
+
+    public void removeCartItem (Long productId) {
+        var cartItem = getItem(productId);
+        if (cartItem != null) {
+            cartItems.remove(cartItem);
+            cartItem.setCart(null);
+        }
+    }
+
+    public void clearCart () {
+        cartItems.clear();
     }
 
 }
